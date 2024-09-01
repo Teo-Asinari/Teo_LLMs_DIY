@@ -1,7 +1,8 @@
 import importlib.metadata
-
 import tiktoken
 import re
+
+from supplementary import create_dataloader_v1
 
 TOKENIZER_REGEX = r'([,.:;?_!"()\']|--|\s)'
 DECODER_REGEX = r'\s+([,.?!()\'])'
@@ -42,7 +43,7 @@ class SimpleTokenizerV1:
 if __name__ == '__main__':
     print("tiktoken version: ", importlib.metadata.version("tiktoken"))
 
-    with open("data/the-verdict.txt", "r", encoding="utf-8") as f:
+    with open("./data/the-verdict.txt", "r", encoding="utf-8") as f:
         raw_text = f.read()
 
     print("Total num chars: ", len(raw_text))
@@ -65,3 +66,11 @@ if __name__ == '__main__':
     integers = BPETokenizer.encode(text)
     print(integers)
     print(BPETokenizer.encode("asdfjk;lxyzmnop;"))
+
+    dataloader = create_dataloader_v1(raw_text, batch_size=0,
+                                      max_length=4, stride=4, shuffle=False)
+
+    data_iter = iter(dataloader)
+    inputs, targets = next(data_iter)
+    print("Inputs:\n", inputs)
+    print("\nTargets:\n", targets)
