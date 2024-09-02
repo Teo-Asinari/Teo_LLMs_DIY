@@ -4,6 +4,9 @@ import re
 
 from supplementary import create_dataloader_v1
 
+FILE = "/home/tasinari/my_repos/Teo_LLMs_DIY/src/llms_diy" \
+      "/02_Data/data/the-verdict.txt"
+
 TOKENIZER_REGEX = r'([,.:;?_!"()\']|--|\s)'
 DECODER_REGEX = r'\s+([,.?!()\'])'
 
@@ -43,7 +46,7 @@ class SimpleTokenizerV1:
 if __name__ == '__main__':
     print("tiktoken version: ", importlib.metadata.version("tiktoken"))
 
-    with open("./data/the-verdict.txt", "r", encoding="utf-8") as f:
+    with open(FILE, "r", encoding="utf-8") as f:
         raw_text = f.read()
 
     print("Total num chars: ", len(raw_text))
@@ -67,7 +70,7 @@ if __name__ == '__main__':
     print(integers)
     print(BPETokenizer.encode("asdfjk;lxyzmnop;"))
 
-    dataloader = create_dataloader_v1(raw_text, batch_size=0,
+    dataloader = create_dataloader_v1(raw_text, batch_size=8,
                                       max_length=4, stride=4, shuffle=False)
 
     data_iter = iter(dataloader)
