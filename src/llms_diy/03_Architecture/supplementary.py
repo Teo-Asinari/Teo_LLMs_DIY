@@ -1,7 +1,7 @@
 import tiktoken
 import torch
 import torch.nn as nn
-from dask.highlevelgraph import Layer
+
 from torch.utils.data import Dataset, DataLoader
 
 class GPTDatasetV1(Dataset):

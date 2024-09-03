@@ -40,8 +40,9 @@ class GPTModel(nn.Module):
         return logits
 
 def generate_text_simple(model, idx, max_new_tokens, context_size):
+    # idx is (batch, n_tokens) array of indices in the current context
     for _ in range(max_new_tokens):
-        idx_cond = idx[:, -context_size]
+        idx_cond = idx[:, -context_size:]
 
         with torch.no_grad():
             logits = model(idx_cond)
@@ -50,7 +51,7 @@ def generate_text_simple(model, idx, max_new_tokens, context_size):
 
         probas = torch.softmax(logits, dim=-1)
         idx_next = torch.argmax(probas, dim=-1, keepdim=True)
-        idx = torch.cat((idx, idx_next), dim=-1)
+        idx = torch.cat((idx, idx_next), dim=1)
 
         return idx
 
@@ -74,4 +75,17 @@ if __name__ == "__main__":
     print("Output shape:\n", out.shape)
     print(out)
 
+    txt3 = "This is an amazing test!1"
+    encodedtxt3 = tokenizer.encode(txt3)
+    print("encodedtxt3:\n", encodedtxt3)
+    asTensor = torch.tensor(encodedtxt3)
+    print("asTensor:\n", asTensor)
+    idx = asTensor.unsqueeze(0)
+    print("idx:\n", idx)
+    batch_input = idx
+    print("batch_input:\n", batch_input)
 
+    out_ids = generate_text_simple(model, idx=batch_input,
+                                   max_new_tokens=10, context_size=1024)
+    new_word = tokenizer.decode(out_ids.squeeze().tolist())
+    print("new word: ", new_word)
