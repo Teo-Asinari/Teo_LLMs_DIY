@@ -1,6 +1,10 @@
 import torch
 import tiktoken
-from supplementary import GPTModel, generate_text_simple
+from supplementary import GPTModel, generate_text_simple, create_dataloader_v1
+
+
+FILE = "/home/tasinari/my_repos/Teo_LLMs_DIY/src/llms_diy" \
+       "/02_Data/data/the-verdict.txt"
 
 GPT_CONFIG_124M = {
     "vocab_size": 50257,
@@ -37,3 +41,51 @@ if __name__ == '__main__':
     )
 
     print("Output text:\n", token_ids_to_text(token_ids, tokenizer))
+
+    with open(FILE, "r", encoding="utf-8") as f:
+        text_data = f.read()
+
+    print(text_data[:99])
+    print(text_data[-99:])
+
+    total_characters = len(text_data)
+    total_tokens = len(tokenizer.encode(text_data))
+
+    print("Characters:", total_characters)
+    print("Tokens:", total_tokens)
+
+
+    train_ratio = 0.90
+    split_idx = int(train_ratio * len(text_data))
+    train_data = text_data[:split_idx]
+    val_data = text_data[split_idx:]
+
+    torch.manual_seed(123)
+
+    train_loader = create_dataloader_v1(
+        train_data,
+        batch_size=2,
+        max_length=GPT_CONFIG_124M["context_length"],
+        stride=GPT_CONFIG_124M["context_length"],
+        drop_last=True,
+        shuffle=True,
+        num_workers=0
+    )
+
+    val_loader = create_dataloader_v1(
+        val_data,
+        batch_size=2,
+        max_length=GPT_CONFIG_124M["context_length"],
+        stride=GPT_CONFIG_124M["context_length"],
+        drop_last=False,
+        shuffle=False,
+        num_workers=0
+    )
+
+    print("Train loader:\n")
+    for x,y in train_loader:
+        print(x.shape, y.shape)
+
+    print("Validation loader:\n")
+    for x,y in val_loader:
+        print(x.shape, y.shape)
