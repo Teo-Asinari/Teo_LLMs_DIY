@@ -54,8 +54,8 @@ def download_file(url, destination):
                     file.write(chunk)
                     progress_bar.update(len(chunk))
 
-def load_gpt2_params_from_tf_ckpt(ckpt_path, setttings):
-    params = {"blocks": [{} for _ in range(setttings["n_layer"])]}
+def load_gpt2_params_from_tf_ckpt(ckpt_path, settings):
+    params = {"blocks": [{} for _ in range(settings["n_layer"])]}
 
     for name, _ in tf.train.list_variables(ckpt_path):
         variable_array = np.squeeze(tf.train.load_variable(ckpt_path, name))

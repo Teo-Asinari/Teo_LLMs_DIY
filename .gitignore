@@ -1,3 +1,4 @@
+./src/llms/diy/05_Weightloading/gpt2/
 .idea/
 *.pdf
 *.pth
